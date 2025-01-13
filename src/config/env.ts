@@ -1,8 +1,13 @@
 // Environment configuration
 const env = {
-  supabase: {
-    url: 'https://gijsuflycpbylijgumka.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdpanN1Zmx5Y3BieWxpamd1bWthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzU4ODk5MDAsImV4cCI6MjA1MTQ2NTkwMH0.yYGdull8oid_6vONfaBuqu0UvgPWRU2oO4ZFPvxEFfM'
+  firebase: {
+    apiKey: 'AIzaSyDelQfrLAdfBAS8XJYgJtdKJiC58HWEFlQ',
+    authDomain: 'circle-256.firebaseapp.com',
+    projectId: 'circle-256',
+    storageBucket: 'circle-256.firebasestorage.app',
+    messagingSenderId: '477169156370',
+    appId: '1:477169156370:web:482761f5d742e736c0b3cb',
+    measurementId: 'G-9X36ESV38P'
   }
 } as const;
 
@@ -10,7 +15,7 @@ const env = {
 export type Config = typeof env;
 
 // Validate required environment variables
-Object.entries(env.supabase).forEach(([key, value]) => {
+Object.entries(env.firebase).forEach(([key, value]) => {
   if (!value) {
     throw new Error(`Missing required environment variable: ${key}`);
   }

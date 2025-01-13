@@ -1,93 +1,92 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { supabase } from '../lib/supabase';
-
-interface User {
-  id: string;
-  email: string;
-  username: string;
-}
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut as firebaseSignOut,
+  User as FirebaseUser
+} from 'firebase/auth';
+import { auth } from '../lib/firebase';
+import { addDoc, collection } from 'firebase/firestore';
+import { firestore } from '../lib/firebase';
 
 interface AuthState {
-  user: User | null;
+  user: FirebaseUser | null;
   isLoading: boolean;
-  signUp: (email: string, password: string, username: string) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signOut: () => void;
+  error: string | null;
+  signUp: (email: string, password: string, username: string) => Promise<void>;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      user: null,
-      isLoading: false,
-      signUp: async (email, password, username) => {
-        try {
-          set({ isLoading: true });
-          
-          const { data, error } = await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-              data: {
-                username
-              }
-            }
-          });
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  isLoading: false,
+  error: null,
+  
+  signUp: async (email, password, username) => {
+    set({ isLoading: true, error: null });
+    try {
+      // Créer l'utilisateur avec Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const firebaseUser = userCredential.user;
 
-          if (error) throw error;
+      // Ajouter des informations supplémentaires dans Firestore
+      await addDoc(collection(firestore, 'users'), {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email,
+        username: username,
+        createdAt: new Date()
+      });
 
-          if (data.user) {
-            set({
-              user: {
-                id: data.user.id,
-                email: data.user.email!,
-                username
-              }
-            });
-          }
-
-          set({ isLoading: false });
-          return { error: null };
-        } catch (error) {
-          set({ isLoading: false });
-          return { error };
-        }
-      },
-      signIn: async (email, password) => {
-        try {
-          set({ isLoading: true });
-          const { data, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-          });
-
-          if (error) throw error;
-
-          if (data.user) {
-            set({
-              user: {
-                id: data.user.id,
-                email: data.user.email!,
-                username: data.user.user_metadata.username
-              }
-            });
-          }
-
-          set({ isLoading: false });
-          return { error: null };
-        } catch (error) {
-          set({ isLoading: false });
-          return { error };
-        }
-      },
-      signOut: async () => {
-        await supabase.auth.signOut();
-        set({ user: null });
-      }
-    }),
-    {
-      name: 'auth-storage'
+      set({ 
+        user: firebaseUser, 
+        isLoading: false, 
+        error: null 
+      });
+    } catch (error: any) {
+      set({ 
+        user: null, 
+        isLoading: false, 
+        error: error.message 
+      });
+      throw error;
     }
-  )
-);
+  },
+  
+  signIn: async (email, password) => {
+    set({ isLoading: true, error: null });
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      set({ 
+        user: userCredential.user, 
+        isLoading: false, 
+        error: null 
+      });
+    } catch (error: any) {
+      set({ 
+        user: null, 
+        isLoading: false, 
+        error: error.message 
+      });
+      throw error;
+    }
+  },
+  
+  signOut: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      await firebaseSignOut(auth);
+      set({ 
+        user: null, 
+        isLoading: false, 
+        error: null 
+      });
+    } catch (error: any) {
+      set({ 
+        error: error.message, 
+        isLoading: false 
+      });
+      throw error;
+    }
+  }
+}));
