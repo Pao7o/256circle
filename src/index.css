@@ -1,0 +1,75 @@
+@import url('https://fonts.cdnfonts.com/css/sf-pro-display');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-family: 'SF Pro Display', system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-[#0f0f0f] text-white;
+  }
+}
+
+/* Custom animation for fade-in effect */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Floating animation for particles */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-10px) translateX(10px);
+  }
+  50% {
+    transform: translateY(0) translateX(20px);
+  }
+  75% {
+    transform: translateY(10px) translateX(10px);
+  }
+}
+
+.animate-float {
+  animation: float 10s ease-in-out infinite;
+}
+
+/* Custom hover effects */
+.hover-glow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 25px rgba(139, 92, 246, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Gradient text effect */
+.gradient-text {
+  @apply bg-gradient-to-r from-violet-500 to-violet-300 bg-clip-text text-transparent;
+}
+
+.nav-link {
+  @apply text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium;
+}
+
+.button-primary {
+  @apply bg-black/30 backdrop-blur-sm border border-violet-500/50 hover:border-violet-500 text-white px-6 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:bg-violet-500/10;
+}
