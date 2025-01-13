@@ -22,16 +22,13 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
     setError('');
     setIsLoading(true);
 
-    const { error: signInError } = await signIn(email, password);
-    
-    setIsLoading(false);
-    
-    if (signInError) {
-      setError(signInError.message);
-      return;
+    try {
+      await signIn(email, password);
+      onClose();
+    } catch (authError: any) {
+      setError(authError.message);
+      setIsLoading(false);
     }
-
-    onClose();
   };
 
   const handleSwitchToSignUp = () => {

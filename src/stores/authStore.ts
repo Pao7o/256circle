@@ -5,9 +5,8 @@ import {
   signOut as firebaseSignOut,
   User as FirebaseUser
 } from 'firebase/auth';
-import { auth } from '../lib/firebase';
-import { addDoc, collection } from 'firebase/firestore';
-import { firestore } from '../lib/firebase';
+import { auth, firestore } from '../lib/firebase';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 
 interface AuthState {
   user: FirebaseUser | null;
@@ -30,12 +29,13 @@ export const useAuthStore = create<AuthState>((set) => ({
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
-      // Ajouter des informations supplémentaires dans Firestore
-      await addDoc(collection(firestore, 'users'), {
+      // Créer un document utilisateur dans Firestore
+      await setDoc(doc(firestore, 'users', firebaseUser.uid), {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
         username: username,
-        createdAt: new Date()
+        createdAt: new Date(),
+        lastLogin: new Date()
       });
 
       set({ 
@@ -57,6 +57,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
+      // Mettre à jour la dernière connexion
+      await setDoc(doc(firestore, 'users', userCredential.user.uid), 
+        { lastLogin: new Date() }, 
+        { merge: true }
+      );
+
       set({ 
         user: userCredential.user, 
         isLoading: false, 

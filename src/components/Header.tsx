@@ -2,15 +2,23 @@ import React, { useContext } from 'react';
 import { Menu, LayoutDashboard, MessageSquare, CircleUserRound } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Navigation from './Navigation';
-import { LoginContext } from '../App';
 import { useAuthStore } from '../stores/authStore';
 import EmojiAvatar from './common/EmojiAvatar';
 import { useNavigationStore } from '../stores/navigationStore';
 
-export default function Header() {
-  const { setShowLogin } = useContext(LoginContext);
-  const { user, isAuthenticated } = useAuthStore();
+interface HeaderProps {
+  onLoginClick?: () => void;
+  isAuthenticated?: boolean;
+}
+
+export default function Header({ 
+  onLoginClick, 
+  isAuthenticated: propIsAuthenticated 
+}: HeaderProps) {
+  const { user, isAuthenticated: storeIsAuthenticated, signOut } = useAuthStore();
   const { toggle } = useNavigationStore();
+
+  const isAuthenticated = propIsAuthenticated ?? storeIsAuthenticated;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-md border-b border-white/10">
@@ -52,15 +60,24 @@ export default function Header() {
                   <MessageSquare className="w-4 h-4" />
                 </Link>
                 <Link 
-                  to="/profile" 
+                  to="/profile"
                   className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                 >
-                  <EmojiAvatar name={user?.username || ''} size="md" />
+                  <EmojiAvatar 
+                    name={user?.username || ''} 
+                    size="md" 
+                  />
                 </Link>
+                <button 
+                  onClick={signOut}
+                  className="button-primary flex items-center gap-2 whitespace-nowrap"
+                >
+                  Sign Out
+                </button>
               </>
             ) : (
-              <button
-                onClick={() => setShowLogin(true)}
+              <button 
+                onClick={onLoginClick}
                 className="button-primary flex items-center gap-2 whitespace-nowrap"
               >
                 <CircleUserRound className="w-4 h-4" />
