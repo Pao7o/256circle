@@ -56,15 +56,11 @@ export default function SignUpForm({ onSuccess, onSwitchToLogin }: SignUpFormPro
     setIsLoading(true);
     
     try {
-      const { error: signUpError } = await signUp(
+      await signUp(
         formData.email,
         formData.password,
         formData.username
       );
-      
-      if (signUpError) {
-        throw signUpError;
-      }
 
       setShowSuccess(true);
       
@@ -99,12 +95,9 @@ export default function SignUpForm({ onSuccess, onSwitchToLogin }: SignUpFormPro
               required
               disabled={isLoading}
               value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value.toLowerCase() })}
-              className="w-full bg-black/30 border border-violet-500/20 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:border-violet-500 disabled:opacity-50"
+              onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+              className="w-full bg-black/30 border border-violet-500/20 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:border-violet-500"
               placeholder="Choose a username"
-              pattern="[a-zA-Z0-9_]+"
-              title="Username can only contain letters, numbers, and underscores"
-              minLength={3}
             />
           </div>
         </div>
@@ -118,8 +111,8 @@ export default function SignUpForm({ onSuccess, onSwitchToLogin }: SignUpFormPro
               required
               disabled={isLoading}
               value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full bg-black/30 border border-violet-500/20 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:border-violet-500 disabled:opacity-50"
+              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+              className="w-full bg-black/30 border border-violet-500/20 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:border-violet-500"
               placeholder="Enter your email"
             />
           </div>
@@ -129,23 +122,16 @@ export default function SignUpForm({ onSuccess, onSwitchToLogin }: SignUpFormPro
           <label className="block text-sm font-medium text-gray-400 mb-1">Password</label>
           <PasswordInput
             value={formData.password}
-            onChange={(value) => setFormData({ ...formData, password: value })}
-            placeholder="Create a password"
+            onChange={(value) => setFormData(prev => ({ ...prev, password: value }))}
+            placeholder="Create a strong password"
           />
-          <ul className="text-xs text-gray-400 mt-2 space-y-1 list-disc pl-4">
-            <li>At least 7 characters long</li>
-            <li>One uppercase letter</li>
-            <li>One lowercase letter</li>
-            <li>One number</li>
-            <li>One special character (!@#$%^&*)</li>
-          </ul>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-400 mb-1">Confirm Password</label>
           <PasswordInput
             value={formData.confirmPassword}
-            onChange={(value) => setFormData({ ...formData, confirmPassword: value })}
+            onChange={(value) => setFormData(prev => ({ ...prev, confirmPassword: value }))}
             placeholder="Confirm your password"
           />
         </div>
@@ -156,13 +142,7 @@ export default function SignUpForm({ onSuccess, onSwitchToLogin }: SignUpFormPro
           className="w-full button-primary flex items-center justify-center gap-2 group py-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
-            <span className="flex items-center gap-2">
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Creating Account...
-            </span>
+            'Creating Account...'
           ) : (
             <>
               Create Account
@@ -176,19 +156,20 @@ export default function SignUpForm({ onSuccess, onSwitchToLogin }: SignUpFormPro
           <button
             type="button"
             onClick={onSwitchToLogin}
-            disabled={isLoading}
-            className="text-violet-400 hover:text-violet-300 disabled:opacity-50"
+            className="text-violet-400 hover:text-violet-300"
           >
-            Log in
+            Sign in
           </button>
         </div>
       </form>
 
-      <SuccessModal
-        isOpen={showSuccess}
-        onClose={handleSuccessClose}
-        email={formData.email}
-      />
+      {showSuccess && (
+        <SuccessModal 
+          isOpen={showSuccess}
+          onClose={handleSuccessClose}
+          email={formData.email}
+        />
+      )}
     </>
   );
 }

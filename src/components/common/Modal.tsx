@@ -15,7 +15,7 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = 'ma
   return (
     <>
       <div 
-        className="fixed inset-0 bg-black/90 backdrop-blur-md z-[80] overflow-hidden" 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] overflow-hidden" 
         onClick={onClose}
       />
       <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 overflow-hidden">

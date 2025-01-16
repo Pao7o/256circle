@@ -1,38 +1,45 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { X, Home, Briefcase, Wrench, Rocket, MessageSquare } from 'lucide-react';
+import { 
+  X, 
+  Home, 
+  Briefcase, 
+  Layers, 
+  Users, 
+  NetworkIcon 
+} from 'lucide-react';
 import { useNavigationStore } from '../stores/navigationStore';
 
 const navItems = [
   {
     label: 'Home',
     href: '/',
-    description: 'Return to homepage with an overview of the site and features',
+    description: 'Your gateway to digital collaboration and innovation',
     icon: Home
   },
   {
     label: 'Projects',
     href: '/projects',
-    description: 'Access ongoing projects, discover opportunities and collaborative ideas',
+    description: 'Explore, join, and create transformative digital ventures',
     icon: Briefcase
   },
   {
-    label: 'Services',
-    href: '/services',
-    description: 'Explore our range of professional services and solutions',
-    icon: Wrench
+    label: 'Ecosystem',
+    href: '/ecosystem',
+    description: 'Comprehensive solutions for startup growth and collaboration',
+    icon: Layers
   },
   {
-    label: 'Incubator',
-    href: '/incubator',
-    description: 'Join our startup incubator program and accelerate your growth',
-    icon: Rocket
-  },
-  {
-    label: 'Forum',
+    label: 'Community',
     href: '/forum',
-    description: 'Connect with the community and share knowledge',
-    icon: MessageSquare
+    description: 'Connect, learn, and share knowledge with like-minded innovators',
+    icon: Users
+  },
+  {
+    label: 'Collaborate',
+    href: '/connect',
+    description: 'Find partners, skills, and opportunities for your next big project',
+    icon: NetworkIcon
   }
 ];
 

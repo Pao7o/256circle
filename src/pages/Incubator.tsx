@@ -17,7 +17,7 @@ export default function Incubator() {
             Transform Your Ideas into Success with 256 Circle Incubator
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-8">
-            Our incubator provides active support and unique resources to maximize your project's chances of success.
+            Strategic support and expert guidance to help promising digital ventures navigate challenges and maximize their potential, without direct financial investment.
           </p>
           <button
             onClick={() => setShowSubmissionForm(true)}
