@@ -19,6 +19,7 @@ import {
   Rocket
 } from 'lucide-react';
 import AnimatedSection from '../components/AnimatedSection';
+import UserDetailsModal from '../components/collaborate/UserDetailsModal';
 
 const skillCategories = {
   'Technical Skills': [
@@ -100,6 +101,7 @@ export default function Connect() {
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedExperience, setSelectedExperience] = useState<string[]>([]);
   const [selectedAvailability, setSelectedAvailability] = useState<string[]>([]);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
 
   const filteredCollaborators = sampleCollaborators.filter(collaborator => 
     (searchTerm === '' || collaborator.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
@@ -213,43 +215,53 @@ export default function Connect() {
 
           {/* Collaborators List */}
           <div className="md:col-span-3 space-y-4">
-            {filteredCollaborators.map(collaborator => (
-              <div 
-                key={collaborator.id} 
-                className="bg-[#1a1a1a] p-6 rounded-xl flex items-center justify-between hover:border-violet-500/50 border border-transparent transition-all"
-              >
-                <div className="flex items-center">
-                  <div className="w-16 h-16 bg-violet-500/10 rounded-full flex items-center justify-center mr-4">
-                    <UserPlus className="w-8 h-8 text-violet-500" />
+            <div className="grid md:grid-cols-3 gap-6 mt-8">
+              {filteredCollaborators.map(collaborator => (
+                <div 
+                  key={collaborator.id}
+                  onClick={() => setSelectedUser(collaborator)}
+                  className="bg-[#1a1a1a] border border-violet-500/20 rounded-xl p-6 cursor-pointer hover:border-violet-500 transition-all group"
+                >
+                  <div className="flex items-center mb-4">
+                    <div className="w-16 h-16 bg-violet-500/20 rounded-full flex items-center justify-center text-3xl font-bold text-violet-400 mr-4">
+                      {collaborator.name[0].toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold gradient-text group-hover:text-violet-400 transition-colors">
+                        {collaborator.name}
+                      </h3>
+                      <p className="text-sm text-gray-400">{collaborator.location}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-white">{collaborator.name}</h3>
-                    <div className="flex items-center text-sm text-gray-400 mt-1">
-                      <Star className="w-4 h-4 text-yellow-500 mr-1" />
-                      {collaborator.rating} • {collaborator.projectsCompleted} Projects
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {collaborator.skills.slice(0, 3).map((skill, index) => (
+                      <span 
+                        key={index} 
+                        className="bg-violet-500/10 text-violet-400 px-2 py-1 rounded-full text-xs"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <div className="flex justify-between text-sm text-gray-400">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 text-yellow-500" />
+                      {collaborator.rating}
                     </div>
-                    <div className="flex gap-2 mt-2">
-                      {collaborator.skills.map(skill => (
-                        <span 
-                          key={skill} 
-                          className="px-2 py-1 bg-[#2a2a2a] text-xs rounded-full text-gray-300"
-                        >
-                          {skill}
-                        </span>
-                      ))}
+                    <div className="flex items-center gap-1">
+                      <Briefcase className="w-4 h-4 text-green-500" />
+                      {collaborator.projectsCompleted} Projects
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">
-                      {collaborator.location}
+                    <div className="flex items-center gap-1">
+                      <UserPlus className="w-4 h-4 text-blue-500" />
+                      {collaborator.availability}
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button className="button-primary flex items-center gap-2 px-4 py-2 rounded-full text-sm">
-                    <Zap className="w-4 h-4" /> Interact
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
 
             {filteredCollaborators.length === 0 && (
               <div className="text-center text-gray-500 py-16">
@@ -259,6 +271,33 @@ export default function Connect() {
           </div>
         </div>
       </div>
+
+      {/* Modal pour les détails de l'utilisateur */}
+      {selectedUser && (
+        <UserDetailsModal 
+          user={{
+            uid: selectedUser.id.toString(),
+            username: selectedUser.name,
+            email: `${selectedUser.name.toLowerCase().replace(' ', '.')}@example.com`,
+            skills: selectedUser.skills,
+            bio: `${selectedUser.experience} level professional with ${selectedUser.projectsCompleted} completed projects.`,
+            completedProjects: selectedUser.projectsCompleted,
+            rating: selectedUser.rating,
+            location: selectedUser.location,
+            joinDate: '2023-01-15', // Date fictive
+            socialLinks: {
+              linkedin: `https://linkedin.com/in/${selectedUser.name.toLowerCase().replace(' ', '-')}`,
+              github: `https://github.com/${selectedUser.name.toLowerCase().replace(' ', '-')}`,
+              portfolio: `https://${selectedUser.name.toLowerCase().replace(' ', '-')}.dev`,
+              twitter: `https://twitter.com/${selectedUser.name.toLowerCase().replace(' ', '')}`
+            },
+            availability: selectedUser.availability,
+            expertise: selectedUser.skills.slice(0, 3), // Première 3 compétences comme expertise
+            languages: ['English', 'French'] // Exemple de langues
+          }} 
+          onClose={() => setSelectedUser(null)} 
+        />
+      )}
     </div>
   );
 }

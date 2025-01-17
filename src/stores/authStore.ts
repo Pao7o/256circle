@@ -9,7 +9,7 @@ import { auth, firestore } from '../lib/firebase';
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 
 interface AuthState {
-  user: FirebaseUser | null;
+  user: (FirebaseUser & { username?: string }) | null;
   isLoading: boolean;
   error: string | null;
   signUp: (email: string, password: string, username: string) => Promise<void>;
@@ -39,7 +39,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
 
       set({ 
-        user: firebaseUser, 
+        user: { ...firebaseUser, username }, 
         isLoading: false, 
         error: null 
       });
@@ -65,7 +65,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       );
 
       set({ 
-        user: userCredential.user, 
+        user: { ...userCredential.user }, 
         isLoading: false, 
         error: null 
       });

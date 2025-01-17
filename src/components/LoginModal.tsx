@@ -6,6 +6,7 @@ import ForgotPasswordModal from './auth/ForgotPasswordModal';
 import GoogleLoginButton from './auth/GoogleLoginButton';
 import SignUpModal from './auth/SignUpModal';
 import Modal from './common/Modal';
+import { usePreventScroll } from '../hooks/usePreventScroll';
 
 export default function LoginModal({ onClose }: { onClose: () => void }) {
   const [email, setEmail] = useState('');
@@ -15,6 +16,9 @@ export default function LoginModal({ onClose }: { onClose: () => void }) {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [showSignUp, setShowSignUp] = useState(false);
   const { signIn } = useAuthStore();
+
+  // Prevent scrolling when modal is open
+  usePreventScroll(true);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Plus, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { usePreventScroll } from '../../hooks/usePreventScroll';
+
+interface SkillRequirement {
+  skill: string;
+  count: number;
+}
 
 interface CreateProjectModalProps {
   onClose: () => void;
@@ -28,19 +34,141 @@ const durations = [
   '1+ year'
 ];
 
+interface SkillCategory {
+  name: string;
+  skills: string[];
+}
+
+const skillsByCategory: SkillCategory[] = [
+  {
+    name: 'Web Development',
+    skills: [
+      'React',
+      'Vue.js',
+      'Angular',
+      'Node.js',
+      'Express.js',
+      'Django',
+      'Flask',
+      'Laravel',
+      'Ruby on Rails',
+      'Next.js',
+      'TypeScript',
+      'GraphQL'
+    ]
+  },
+  {
+    name: 'Mobile Development',
+    skills: [
+      'React Native',
+      'Flutter',
+      'Swift',
+      'Kotlin',
+      'Java',
+      'Android',
+      'iOS'
+    ]
+  },
+  {
+    name: 'AI/ML',
+    skills: [
+      'Python',
+      'TensorFlow',
+      'PyTorch',
+      'Keras',
+      'Machine Learning',
+      'Deep Learning',
+      'Natural Language Processing',
+      'Computer Vision'
+    ]
+  },
+  {
+    name: 'Digital Marketing',
+    skills: [
+      'SEO',
+      'Social Media Marketing',
+      'Content Marketing',
+      'Google Ads',
+      'Facebook Ads',
+      'Email Marketing',
+      'Analytics',
+      'Copywriting'
+    ]
+  },
+  {
+    name: 'Design',
+    skills: [
+      'UI/UX',
+      'Figma',
+      'Adobe XD',
+      'Sketch',
+      'Photoshop',
+      'Illustrator'
+    ]
+  },
+  {
+    name: 'Blockchain',
+    skills: [
+      'Solidity',
+      'Web3',
+      'Smart Contracts',
+      'Ethereum',
+      'Blockchain Development'
+    ]
+  },
+  {
+    name: 'General Skills',
+    skills: [
+      'Project Management',
+      'Communication',
+      'Teamwork',
+      'Problem Solving',
+      'Agile Methodology',
+      'Scrum',
+      'Leadership'
+    ]
+  }
+];
+
+// Flatten skills array for validation
+const predefinedSkills = skillsByCategory.reduce((acc, category) => [...acc, ...category.skills], [] as string[]);
+
 export default function CreateProjectModal({ onClose, onCreate }: CreateProjectModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     category: '',
-    skills: '',
+    skills: [] as string[],
+    skillRequirements: [] as SkillRequirement[],
     startDate: '',
-    teamSize: '',
     duration: '',
     visibility: 'public',
     startType: 'date',
     useEscrow: false
   });
+
+  const [newSkill, setNewSkill] = useState('');
+  const [skillInput, setSkillInput] = useState('');
+
+  // Prevent scrolling when modal is open
+  usePreventScroll(true);
+
+  const handleAddSkill = () => {
+    if (skillInput && !formData.skills.includes(skillInput)) {
+      setFormData(prev => ({
+        ...prev, 
+        skills: [...prev.skills, skillInput]
+      }));
+      setSkillInput('');
+    }
+  };
+
+  const handleRemoveSkill = (skillToRemove: string) => {
+    setFormData(prev => ({
+      ...prev, 
+      skills: prev.skills.filter(skill => skill !== skillToRemove)
+    }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,8 +182,18 @@ export default function CreateProjectModal({ onClose, onCreate }: CreateProjectM
         className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[80]" 
         onClick={onClose}
       />
-      <div className="fixed inset-0 z-[90] flex items-center justify-center p-4">
-        <div className="bg-[#1a1a1a] rounded-xl border border-violet-500/20 p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div 
+        className="fixed inset-0 z-[90] flex items-center justify-center p-4 overflow-y-auto"
+        // Prevent scroll on this div
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+      >
+        <div 
+          className="bg-[#1a1a1a] rounded-xl border border-violet-500/20 p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+          // Prevent scroll propagation
+          onWheel={(e) => e.stopPropagation()}
+          onTouchMove={(e) => e.stopPropagation()}
+        >
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold gradient-text">Create New Project</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-white">
@@ -113,16 +251,109 @@ export default function CreateProjectModal({ onClose, onCreate }: CreateProjectM
             {/* Required Skills */}
             <div>
               <label className="block text-sm font-medium text-gray-400 mb-2">
-                Required Skills (comma-separated)
+                Required Skills
               </label>
-              <input
-                type="text"
-                required
-                className="w-full bg-black/30 border border-violet-500/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500"
-                value={formData.skills}
-                onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                placeholder="e.g., React, Node.js, Marketing"
-              />
+              <div className="flex gap-2 mb-2">
+                <select
+                  className="flex-grow bg-black/30 border border-violet-500/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500"
+                  value={skillInput}
+                  onChange={(e) => setSkillInput(e.target.value)}
+                >
+                  <option value="">Select a skill</option>
+                  {skillsByCategory.map((category) => (
+                    <optgroup key={category.name} label={category.name}>
+                      {category.skills
+                        .filter(skill => !formData.skills.includes(skill))
+                        .map((skill) => (
+                          <option key={skill} value={skill}>{skill}</option>
+                        ))}
+                    </optgroup>
+                  ))}
+                </select>
+                <input 
+                  type="text"
+                  placeholder="Or add a custom skill"
+                  className="flex-grow bg-black/30 border border-violet-500/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500"
+                  value={newSkill}
+                  onChange={(e) => setNewSkill(e.target.value)}
+                />
+                <button 
+                  type="button"
+                  onClick={() => {
+                    if (skillInput) {
+                      handleAddSkill();
+                    } else if (newSkill && !formData.skills.includes(newSkill)) {
+                      setFormData(prev => ({
+                        ...prev, 
+                        skills: [...prev.skills, newSkill]
+                      }));
+                      setNewSkill('');
+                    }
+                  }}
+                  className="button-primary px-4 py-2 flex items-center gap-2"
+                >
+                  <Plus className="w-5 h-5" />
+                  Add
+                </button>
+              </div>
+
+              {/* Selected Skills */}
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.skills.map((skill) => (
+                  <div 
+                    key={skill} 
+                    className="flex items-center bg-violet-500/20 text-violet-300 rounded-full px-3 py-1 text-sm"
+                  >
+                    {skill}
+                    <button 
+                      type="button"
+                      onClick={() => handleRemoveSkill(skill)}
+                      className="ml-2 text-red-400 hover:text-red-600"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Skill Requirements */}
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-2">
+                Team Requirements
+              </label>
+              <div className="space-y-4">
+                {formData.skills.map((skill) => (
+                  <div key={skill} className="flex items-center gap-4">
+                    <span className="text-violet-300 min-w-[150px]">{skill}</span>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Number of people"
+                        className="w-40 bg-black/30 border border-violet-500/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500"
+                        value={formData.skillRequirements.find(req => req.skill === skill)?.count || ''}
+                        onChange={(e) => {
+                          const count = parseInt(e.target.value) || 0;
+                          setFormData(prev => ({
+                            ...prev,
+                            skillRequirements: [
+                              ...prev.skillRequirements.filter(req => req.skill !== skill),
+                              { skill, count }
+                            ]
+                          }));
+                        }}
+                      />
+                      <span className="text-gray-400">people</span>
+                    </div>
+                  </div>
+                ))}
+                {formData.skills.length === 0 && (
+                  <p className="text-gray-400 text-sm italic">
+                    Add skills above to specify team requirements
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Start Type */}
@@ -171,21 +402,6 @@ export default function CreateProjectModal({ onClose, onCreate }: CreateProjectM
                 />
               </div>
             )}
-
-            {/* Team Size */}
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">
-                Team Size (number of members needed)
-              </label>
-              <input
-                type="number"
-                required
-                min="1"
-                className="w-full bg-black/30 border border-violet-500/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet-500"
-                value={formData.teamSize}
-                onChange={(e) => setFormData({ ...formData, teamSize: e.target.value })}
-              />
-            </div>
 
             {/* Duration */}
             <div>

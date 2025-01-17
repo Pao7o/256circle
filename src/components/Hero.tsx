@@ -2,9 +2,12 @@ import React from 'react';
 import { ArrowRight, Globe, Lock, TrendingUp } from 'lucide-react';
 import AnimatedSection from './AnimatedSection';
 import NetworkAnimation from './NetworkAnimation';
-import { Link } from 'react-router-dom';
 
-export default function Hero() {
+interface HeroProps {
+  onExploreServicesClick?: () => void;
+}
+
+export default function Hero({ onExploreServicesClick }: HeroProps) {
   const heroFeatures = [
     { icon: Globe, text: 'Global Collaboration' },
     { icon: Lock, text: 'Secure Transactions' },
@@ -42,10 +45,13 @@ export default function Hero() {
             ))}
           </div>
           
-          <Link to="/services" className="button-primary flex items-center gap-2">
+          <button 
+            onClick={onExploreServicesClick} 
+            className="button-primary flex items-center gap-2"
+          >
             Explore Services
             <ArrowRight className="w-4 h-4" />
-          </Link>
+          </button>
         </AnimatedSection>
       </div>
     </div>

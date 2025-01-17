@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, ArrowRight, X } from 'lucide-react';
 import Modal from '../common/Modal';
+import { usePreventScroll } from '../../hooks/usePreventScroll';
 
 interface ForgotPasswordModalProps {
   isOpen: boolean;
@@ -10,6 +11,9 @@ interface ForgotPasswordModalProps {
 export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordModalProps) {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
+
+  // Prevent scrolling when modal is open
+  usePreventScroll(isOpen);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

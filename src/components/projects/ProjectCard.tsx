@@ -12,7 +12,7 @@ interface ProjectCardProps {
     name: string;
     description: string;
     category: string;
-    skills: string;
+    skills: string[] | string;
     startDate: string;
     startType: string;
     duration: string;
@@ -33,6 +33,11 @@ export default function ProjectCard({ project, onClick, onLike }: ProjectCardPro
   if (!project || !project.owner) return null;
 
   const { gradientText, borderColor, skillsBg, skillsText } = getProjectCardColor(project.category);
+
+  // Normalize skills to an array
+  const skillsList = Array.isArray(project.skills) 
+    ? project.skills 
+    : (project.skills as string).split(',').map(skill => skill.trim());
 
   return (
     <div 
@@ -68,12 +73,12 @@ export default function ProjectCard({ project, onClick, onLike }: ProjectCardPro
       <p className="text-gray-400 mb-4 line-clamp-2">{project.description}</p>
       
       <div className="flex flex-wrap gap-2 mb-4">
-        {project.skills.split(',').map((skill, index) => (
+        {skillsList.map((skill, index) => (
           <span
             key={index}
             className={`px-2 py-1 rounded-full text-sm ${skillsBg} ${skillsText}`}
           >
-            {skill.trim()}
+            {skill}
           </span>
         ))}
       </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import AnimatedSection from './AnimatedSection';
 import { 
   ArrowRight, 
@@ -8,7 +8,7 @@ import {
   Star, 
   TrendingUp 
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { LoginContext } from '../App';
 
 const visionSteps = [
   {
@@ -49,6 +49,8 @@ const visionSteps = [
 ];
 
 export default function VisionCircle() {
+  const { setShowLogin } = useContext(LoginContext);
+
   return (
     <div className="py-24 bg-[#0a0a0a] relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-600/5 to-transparent opacity-50"></div>
@@ -79,16 +81,6 @@ export default function VisionCircle() {
               </div>
             </AnimatedSection>
           ))}
-        </div>
-
-        <div className="text-center mt-16">
-          <Link 
-            to="/about" 
-            className="button-primary inline-flex items-center gap-2"
-          >
-            Learn More About Our Vision
-            <ArrowRight className="w-4 h-4" />
-          </Link>
         </div>
       </div>
     </div>

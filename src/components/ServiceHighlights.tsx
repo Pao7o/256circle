@@ -6,7 +6,9 @@ import {
   BarChart,
   Compass,
   Lock,
-  Link as LinkIcon
+  Link as LinkIcon,
+  TrendingUp,
+  ArrowRight
 } from 'lucide-react';
 import AnimatedSection from './AnimatedSection';
 import { Link } from 'react-router-dom';
@@ -52,10 +54,10 @@ export default function ServiceHighlights() {
       delay: 200
     },
     {
-      icon: ShieldCheck,
-      title: 'Risk Management',
-      description: 'Comprehensive tools to assess, monitor, and mitigate potential project risks collaboratively.',
-      link: '/services/risk-management',
+      icon: TrendingUp,
+      title: 'Strategic Alignment',
+      description: 'Optimize your project strategy and resource allocation for maximum impact',
+      link: '/strategic-alignment',
       delay: 300
     },
     {
@@ -74,7 +76,7 @@ export default function ServiceHighlights() {
     },
     {
       icon: Compass,
-      title: 'Strategic Alignment',
+      title: 'Compass',
       description: 'Synchronize individual skills and goals to create cohesive, high-impact project teams.',
       link: '/services/strategic-alignment',
       delay: 600
@@ -87,6 +89,10 @@ export default function ServiceHighlights() {
       delay: 700
     }
   ];
+
+  const scrollToServices = () => {
+    // implement scroll to services logic here
+  };
 
   return (
     <section className="py-16 px-4 md:px-8 lg:px-16 bg-[#0a0a0a]">
@@ -109,13 +115,13 @@ export default function ServiceHighlights() {
           ))}
         </div>
         <div className="text-center mt-16">
-          <Link 
-            to="/services" 
+          <button 
+            onClick={scrollToServices}
             className="button-primary inline-flex items-center gap-2"
           >
-            Explore All Services
-            <LinkIcon className="w-4 h-4" />
-          </Link>
+            Explore Our Services
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </div>
       </div>
     </section>

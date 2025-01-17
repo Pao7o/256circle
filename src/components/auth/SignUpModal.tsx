@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SignUpForm from './SignUpForm';
 import Modal from '../common/Modal';
 import GoogleLoginButton from './GoogleLoginButton';
+import { usePreventScroll } from '../../hooks/usePreventScroll';
 
 interface SignUpModalProps {
   isOpen: boolean;
@@ -19,6 +20,8 @@ export default function SignUpModal({ isOpen, onClose, onSwitchToLogin }: SignUp
       onClose();
     }, 2000);
   };
+
+  usePreventScroll(isOpen);
 
   return (
     <Modal 
