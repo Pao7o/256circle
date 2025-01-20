@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { X, Users, Shield, Settings, UserPlus, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import EmojiAvatar from '../common/EmojiAvatar';
 
 interface Member {
@@ -20,11 +21,42 @@ interface GroupInfoProps {
     projectId?: string;
   };
   onClose: () => void;
+  onMemberClick: (member: Member) => void;
 }
 
-export default function GroupInfo({ group, onClose }: GroupInfoProps) {
+export default function GroupInfo({ group, onClose, onMemberClick }: GroupInfoProps) {
   const admins = group.members.filter(m => m.role === 'admin');
   const members = group.members.filter(m => m.role === 'member');
+
+  const MemberList = ({ members, title, icon }: { members: Member[], title: string, icon: JSX.Element }) => (
+    <div>
+      <h5 className="text-xs text-gray-400 mb-2 flex items-center gap-1">
+        {icon}
+        {title}
+      </h5>
+      <div className="space-y-2">
+        {members.map(member => (
+          <div key={member.id} className="flex items-center justify-between">
+            <div 
+              className="flex items-center gap-2 cursor-pointer hover:bg-violet-500/10 p-2 rounded-lg transition-colors flex-1"
+              onClick={() => onMemberClick(member)}
+            >
+              <EmojiAvatar name={member.name} size="sm" />
+              <div>
+                <p className="text-sm font-medium">{member.name}</p>
+                <p className="text-xs text-gray-400">
+                  Joined {new Date(member.joinedAt).toLocaleDateString()}
+                </p>
+              </div>
+            </div>
+            <div className={`w-2 h-2 rounded-full ${
+              member.status === 'online' ? 'bg-emerald-400' : 'bg-gray-400'
+            }`} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <div className="h-full flex flex-col bg-[#0f0f0f] border-l border-violet-500/20">
@@ -66,57 +98,11 @@ export default function GroupInfo({ group, onClose }: GroupInfoProps) {
 
             <div className="space-y-4">
               {admins.length > 0 && (
-                <div>
-                  <h5 className="text-xs text-gray-400 mb-2 flex items-center gap-1">
-                    <Shield className="w-3 h-3" />
-                    Admins
-                  </h5>
-                  <div className="space-y-2">
-                    {admins.map(member => (
-                      <div key={member.id} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <EmojiAvatar name={member.name} size="sm" />
-                          <div>
-                            <p className="text-sm font-medium">{member.name}</p>
-                            <p className="text-xs text-gray-400">
-                              Joined {new Date(member.joinedAt).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                        <div className={`w-2 h-2 rounded-full ${
-                          member.status === 'online' ? 'bg-emerald-400' : 'bg-gray-400'
-                        }`} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <MemberList members={admins} title="Admins" icon={<Shield className="w-3 h-3" />} />
               )}
 
               {members.length > 0 && (
-                <div>
-                  <h5 className="text-xs text-gray-400 mb-2 flex items-center gap-1">
-                    <Users className="w-3 h-3" />
-                    Members
-                  </h5>
-                  <div className="space-y-2">
-                    {members.map(member => (
-                      <div key={member.id} className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <EmojiAvatar name={member.name} size="sm" />
-                          <div>
-                            <p className="text-sm font-medium">{member.name}</p>
-                            <p className="text-xs text-gray-400">
-                              Joined {new Date(member.joinedAt).toLocaleDateString()}
-                            </p>
-                          </div>
-                        </div>
-                        <div className={`w-2 h-2 rounded-full ${
-                          member.status === 'online' ? 'bg-emerald-400' : 'bg-gray-400'
-                        }`} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                <MemberList members={members} title="Members" icon={<Users className="w-3 h-3" />} />
               )}
             </div>
           </div>

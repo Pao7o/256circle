@@ -6,7 +6,9 @@ import ChatList from '../components/messages/ChatList';
 import ChatHeader from '../components/messages/ChatHeader';
 import GroupInfo from '../components/messages/GroupInfo';
 import EmojiAvatar from '../components/common/EmojiAvatar';
+import UserDetailsModal from '../components/collaborate/UserDetailsModal';
 import { mockChats, mockChatMessages } from '../data/mockMessages';
+import { Message } from '../types/chat';
 
 export default function Messages() {
   const location = useLocation();
@@ -14,6 +16,23 @@ export default function Messages() {
   const [showGroupInfo, setShowGroupInfo] = useState(false);
   const [showChatList, setShowChatList] = useState(true);
   const [newMessage, setNewMessage] = useState('');
+  const [messages, setMessages] = useState<Record<string, Message[]>>(mockChatMessages);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+
+  useEffect(() => {
+    console.log('Mock Chats:', mockChats);
+    console.log('Mock Chat Messages:', mockChatMessages);
+  }, []);
+
+  useEffect(() => {
+    console.log('Initial Chats:', mockChats);
+    if (mockChats.length > 0) {
+      const defaultChat = mockChats.find(chat => chat.type === 'group') || mockChats[0];
+      console.log('Default Selected Chat:', defaultChat);
+      setSelectedChat(defaultChat.id);
+      setShowChatList(false);
+    }
+  }, [mockChats]);
 
   useEffect(() => {
     const state = location.state as { selectedChat?: string };
@@ -24,11 +43,28 @@ export default function Messages() {
   }, [location.state]);
 
   const currentChat = mockChats.find(chat => chat.id === selectedChat);
-  const currentMessages = selectedChat ? mockChatMessages[selectedChat] : [];
+  const currentMessages = selectedChat ? messages[selectedChat] || [] : [];
+
+  console.log('Selected Chat:', selectedChat);
+  console.log('Current Chat:', currentChat);
+  console.log('Current Messages:', currentMessages);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim()) return;
+    if (!newMessage.trim() || !selectedChat) return;
+
+    const newMsg: Message = {
+      id: `msg-${Date.now()}`,
+      content: newMessage,
+      senderName: 'You',
+      timestamp: new Date().toISOString(),
+    };
+
+    setMessages(prev => ({
+      ...prev,
+      [selectedChat]: [...(prev[selectedChat] || []), newMsg],
+    }));
+
     setNewMessage('');
   };
 
@@ -36,6 +72,52 @@ export default function Messages() {
     setShowChatList(true);
     setSelectedChat(null);
     setShowGroupInfo(false);
+  };
+
+  const handleGroupMemberClick = (member: any) => {
+    setSelectedUser({
+      username: member.name,
+      email: `${member.name.toLowerCase().replace(' ', '.')}@example.com`, // Mock email
+      rating: 4.5,
+      completedProjects: 8,
+      skills: ['UI/UX Design', 'Product Management', 'Digital Marketing'], // Mock skills
+      bio: `Mid-level professional with experience in ${member.name}'s domain`,
+      location: 'New York, NY', // Mock location
+      joinDate: member.joinedAt,
+      availability: 'Part-time',
+      socialLinks: {
+        linkedin: `https://linkedin.com/in/${member.name.toLowerCase().replace(' ', '-')}`,
+        github: `https://github.com/${member.name.toLowerCase().replace(' ', '-')}`,
+        portfolio: `https://${member.name.toLowerCase().replace(' ', '')}.dev`,
+        twitter: `https://twitter.com/${member.name.toLowerCase().replace(' ', '')}`
+      }
+    });
+  };
+
+  const handleHeaderClick = () => {
+    if (!currentChat) return;
+
+    if (currentChat.type === 'direct') {
+      setSelectedUser({
+        username: currentChat.name,
+        email: `${currentChat.name.toLowerCase().replace(' ', '.')}@example.com`, // Mock email
+        rating: 4.5,
+        completedProjects: 8,
+        skills: ['UI/UX Design', 'Product Management', 'Digital Marketing'], // Mock skills
+        bio: `Mid-level professional with experience in ${currentChat.name}'s domain`,
+        location: 'New York, NY', // Mock location
+        joinDate: '2023-01-15', // Mock join date
+        availability: 'Part-time',
+        socialLinks: {
+          linkedin: `https://linkedin.com/in/${currentChat.name.toLowerCase().replace(' ', '-')}`,
+          github: `https://github.com/${currentChat.name.toLowerCase().replace(' ', '-')}`,
+          portfolio: `https://${currentChat.name.toLowerCase().replace(' ', '')}.dev`,
+          twitter: `https://twitter.com/${currentChat.name.toLowerCase().replace(' ', '')}`
+        }
+      });
+    } else {
+      setShowGroupInfo(true);
+    }
   };
 
   return (
@@ -54,6 +136,7 @@ export default function Messages() {
               chats={mockChats}
               selectedChat={selectedChat}
               onSelectChat={(chatId) => {
+                console.log('Chat selected:', chatId);
                 setSelectedChat(chatId);
                 setShowChatList(false);
               }}
@@ -78,23 +161,63 @@ export default function Messages() {
                   }}
                   onShowInfo={() => setShowGroupInfo(true)}
                   onBack={handleBack}
+                  onHeaderClick={handleHeaderClick}
                 />
 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                  {currentMessages.map((message) => (
-                    <div key={message.id} className="flex items-start gap-3">
-                      <EmojiAvatar name={message.senderName} size="sm" />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-baseline gap-2">
-                          <span className="font-medium">{message.senderName}</span>
-                          <span className="text-xs text-gray-400">
-                            {new Date(message.timestamp).toLocaleTimeString()}
-                          </span>
-                        </div>
-                        <p className="text-gray-300 mt-1 break-words">{message.content}</p>
-                      </div>
+                  {currentMessages.length === 0 ? (
+                    <div className="flex items-center justify-center h-full text-gray-400">
+                      No messages in this conversation
                     </div>
-                  ))}
+                  ) : (
+                    currentMessages.map((message) => (
+                      <div key={message.id} className={`flex items-start gap-3 ${message.senderName === 'You' ? 'justify-end' : 'justify-start'}`}>
+                        {message.senderName !== 'You' && (
+                          <div 
+                            className="cursor-pointer hover:opacity-80 transition-opacity"
+                            onClick={() => setSelectedUser({
+                              username: message.senderName,
+                              email: `${message.senderName.toLowerCase().replace(' ', '.')}@example.com`, // Mock email
+                              rating: 4.5,
+                              completedProjects: 8,
+                              skills: ['UI/UX Design', 'Product Management', 'Digital Marketing'], // Mock skills
+                              bio: `Mid-level professional with experience in ${message.senderName}'s domain`,
+                              location: 'New York, NY', // Mock location
+                              joinDate: '2023-01-15', // Mock join date
+                              availability: 'Part-time',
+                              socialLinks: {
+                                linkedin: `https://linkedin.com/in/${message.senderName.toLowerCase().replace(' ', '-')}`,
+                                github: `https://github.com/${message.senderName.toLowerCase().replace(' ', '-')}`,
+                                portfolio: `https://${message.senderName.toLowerCase().replace(' ', '')}.dev`,
+                                twitter: `https://twitter.com/${message.senderName.toLowerCase().replace(' ', '')}`
+                              }
+                            })}
+                          >
+                            <EmojiAvatar name={message.senderName} size="sm" />
+                          </div>
+                        )}
+                        <div className={`min-w-0 ${message.senderName === 'You' ? 'max-w-[80%]' : 'flex-1'}`}>
+                          {message.senderName !== 'You' && (
+                            <div className="flex items-baseline gap-2 mb-1">
+                              <span className="font-medium">{message.senderName}</span>
+                            </div>
+                          )}
+                          <div className={`flex flex-col ${message.senderName === 'You' ? 'items-end' : 'items-start'}`}>
+                            <p className={`break-words rounded-lg p-3 ${
+                              message.senderName === 'You' 
+                                ? 'bg-violet-600 text-white' 
+                                : 'bg-gray-700/50 text-gray-300'
+                            }`}>
+                              {message.content}
+                            </p>
+                            <span className="text-xs text-gray-400 mt-1">
+                              {new Date(message.timestamp).toLocaleTimeString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
 
                 <form onSubmit={handleSendMessage} className="p-4 border-t border-violet-500/20">
@@ -149,11 +272,19 @@ export default function Messages() {
               <GroupInfo
                 group={currentChat}
                 onClose={() => setShowGroupInfo(false)}
+                onMemberClick={handleGroupMemberClick}
               />
             </div>
           )}
         </div>
       </div>
+
+      {selectedUser && (
+        <UserDetailsModal
+          user={selectedUser}
+          onClose={() => setSelectedUser(null)}
+        />
+      )}
     </div>
   );
 }
