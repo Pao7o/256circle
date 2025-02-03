@@ -5,29 +5,20 @@ import { useNavigationStore } from '../stores/navigationStore';
 
 const navItems = [
   {
-    label: 'Home',
-    href: '/',
-    icon: () => <span>🏠</span>
-  },
-  {
     label: 'Projects',
-    href: '/projects',
-    icon: () => <span>💼</span>
+    href: '/projects'
   },
   {
     label: 'Ecosystem',
-    href: '/ecosystem',
-    icon: () => <span>🌐</span>
+    href: '/ecosystem'
   },
   {
     label: 'Community',
-    href: '/forum',
-    icon: () => <span>👥</span>
+    href: '/forum'
   },
   {
     label: 'Collaborate',
-    href: '/connect',
-    icon: () => <span>🤝</span>
+    href: '/connect'
   }
 ];
 
@@ -78,6 +69,13 @@ export default function MobileMenu() {
         }
       `}</style>
       <div className="flex justify-between items-center p-6">
+        <button
+          onClick={close}
+          className="text-gray-400 hover:text-white transition-colors"
+          aria-label="Close menu"
+        >
+          <X className="w-6 h-6" />
+        </button>
         <h1 
           className="text-2xl font-bold text-violet-400"
           style={{
@@ -86,13 +84,6 @@ export default function MobileMenu() {
         >
           256 Circle
         </h1>
-        <button
-          onClick={close}
-          className="text-gray-400 hover:text-white transition-colors"
-          aria-label="Close menu"
-        >
-          <X className="w-6 h-6" />
-        </button>
       </div>
 
       <nav className="flex-1 flex flex-col justify-center items-center gap-8 p-4">
@@ -108,7 +99,6 @@ export default function MobileMenu() {
               animation: `slideIn 0.3s ease-out forwards ${index * 0.1}s`
             }}
           >
-            {item.icon()}
             {item.label}
           </Link>
         ))}
