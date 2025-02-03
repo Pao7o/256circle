@@ -41,10 +41,8 @@ export default function MobileMenu() {
 
   return (
     <div 
-      className="fixed inset-0 bg-black/90 z-[99999] flex flex-col"
-      style={{
-        animation: 'fadeIn 0.3s ease-out'
-      }}
+      className="fixed inset-0 bg-black/90 z-[99999] flex flex-col justify-start items-start" 
+      style={{ animation: 'slideIn 0.3s ease-out' }}
     >
       <style jsx>{`
         @keyframes fadeIn {
@@ -60,15 +58,15 @@ export default function MobileMenu() {
         @keyframes slideIn {
           from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateX(20px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(0);
           }
         }
       `}</style>
-      <div className="flex justify-between items-center p-6">
+      <div className="flex items-center p-6 w-full">
         <button
           onClick={close}
           className="text-gray-400 hover:text-white transition-colors"
@@ -76,23 +74,18 @@ export default function MobileMenu() {
         >
           <X className="w-6 h-6" />
         </button>
-        <h1 
-          className="text-2xl font-bold text-violet-400"
-          style={{
-            animation: 'fadeIn 0.3s ease-out'
-          }}
-        >
+        <Link to="/" onClick={close} className="text-2xl font-bold text-violet-400 mx-auto" style={{ animation: 'fadeIn 0.3s ease-out' }}>
           256 Circle
-        </h1>
+        </Link>
       </div>
 
-      <nav className="flex-1 flex flex-col justify-center items-center gap-8 p-4">
+      <nav className="flex-1 flex flex-col items-start gap-8 p-4">
         {navItems.map((item, index) => (
           <Link
             key={item.label}
             to={item.href}
             onClick={close}
-            className={`text-2xl font-medium hover:text-white hover:scale-110 transition-all flex items-center gap-3 ${
+            className={`text-2xl font-medium hover:text-white hover:scale-110 transition-all ${
               location.pathname === item.href ? 'text-violet-400' : 'text-gray-300'
             }`}
             style={{

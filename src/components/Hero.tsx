@@ -10,8 +10,7 @@ interface HeroProps {
 export default function Hero({ onExploreServicesClick }: HeroProps) {
   const heroFeatures = [
     { icon: Globe, text: 'Global Collaboration' },
-    { icon: Lock, text: 'Secure Transactions' },
-    { icon: TrendingUp, text: 'Optimized Profits' }
+    { icon: Lock, text: 'Secure Transactions' }
   ];
 
   return (
@@ -21,17 +20,17 @@ export default function Hero({ onExploreServicesClick }: HeroProps) {
       {/* Content */}
       <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
         <AnimatedSection delay={200}>
-          <h1 className="text-6xl md:text-8xl font-bold mb-6 gradient-text tracking-tight">
+          <h1 className="text-5xl md:text-8xl font-bold mb-6 gradient-text tracking-tight">
             256 Circle
           </h1>
         </AnimatedSection>
         
         <AnimatedSection delay={400}>
-          <p className="text-xl md:text-2xl text-gray-300 mb-4 font-medium">
+          <p className="text-md md:text-2xl text-gray-300 mb-4 font-medium">
             Collective Success, Minimized Risk
           </p>
-          <p className="text-lg text-gray-400 mb-12 max-w-2xl mx-auto">
-            A collaborative platform where skilled individuals unite to transform digital opportunities into profitable ventures through strategic partnerships and intelligent risk management.
+          <p className="text-md text-gray-400 mb-12 max-w-2xl mx-auto">
+            A collaborative platform where skilled individuals unite to transform digital opportunities into profitable ventures.
           </p>
         </AnimatedSection>
 
