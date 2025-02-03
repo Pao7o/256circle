@@ -7,6 +7,7 @@ import { ModalProvider } from './contexts/ModalContext';
 // Lazy loading des composants
 const Header = React.lazy(() => import('./components/Header.tsx'));
 const Footer = React.lazy(() => import('./components/Footer.tsx'));
+const MobileMenu = React.lazy(() => import('./components/MobileMenu.tsx'));
 const Home = React.lazy(() => import('./pages/Home.tsx'));
 const Projects = React.lazy(() => import('./pages/Projects.tsx'));
 const Services = React.lazy(() => import('./pages/Services.tsx'));
@@ -76,6 +77,7 @@ function App() {
                 onLoginClick={() => setShowLogin(true)} 
                 isAuthenticated={!!user}
               />
+              <MobileMenu />
               
               {showLogin && (
                 <LoginModal onClose={() => setShowLogin(false)} />

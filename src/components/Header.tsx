@@ -21,7 +21,7 @@ export default function Header({
   const isAuthenticated = propIsAuthenticated ?? storeIsAuthenticated;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-md border-b border-white/10">
+    <header className="fixed top-0 left-0 right-0 z-40 bg-black/20 backdrop-blur-md border-b border-white/10">
       <div className="max-w-7xl mx-auto px-4 py-2 lg:py-4">
         <div className="flex items-center justify-between">
           {/* Menu Button and Logo */}
@@ -68,12 +68,6 @@ export default function Header({
                     size="md" 
                   />
                 </Link>
-                <button 
-                  onClick={signOut}
-                  className="button-primary flex items-center gap-2 whitespace-nowrap"
-                >
-                  Sign Out
-                </button>
               </>
             ) : (
               <button 
